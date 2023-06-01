@@ -1,5 +1,6 @@
 #ifndef LLMODEL_H
 #define LLMODEL_H
+#include <iostream>
 #include <string>
 #include <functional>
 #include <vector>
@@ -45,7 +46,22 @@ public:
         return modelType;
     }
 
+    std::function<void(float)> promptProgressCallback = [] (float progress) {
+        std::cout << "\r" << unsigned(progress) << "%  " << std::flush;
+    };
+
 protected:
+    void reportPromptProgress(std::size_t index, std::size_t size) {
+        if (promptProgressCallback) {
+            promptProgressCallback(float(index) / size * 100.f);
+        }
+    }
+    void reportPromptCompletion() {
+        if (promptProgressCallback) {
+            promptProgressCallback(100.f);
+        }
+    }
+
     virtual void recalculateContext(PromptContext &promptCtx,
         std::function<bool(bool)> recalculate) = 0;
 

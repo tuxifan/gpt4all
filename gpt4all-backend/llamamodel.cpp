@@ -223,6 +223,8 @@ void LLamaModel::prompt(const std::string &prompt,
             return;
         }
 
+        reportPromptProgress(i, embd_inp.size());
+
         size_t tokens = batch_end - i;
         for (size_t t = 0; t < tokens; ++t) {
             if (int32_t(promptCtx.tokens.size()) == promptCtx.n_ctx)
@@ -234,6 +236,8 @@ void LLamaModel::prompt(const std::string &prompt,
         promptCtx.n_past += batch.size();
         i = batch_end;
     }
+
+    reportPromptCompletion();
 
     std::string cachedResponse;
     std::vector<llama_token> cachedTokens;
